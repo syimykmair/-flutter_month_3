@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/add/add_page.dart';
+import 'dart:math';
+
+import 'package:todo_list/database/app_database.dart';
+import 'package:todo_list/setting/setting_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -13,6 +17,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   List<String> tasks = [];
+  bool isVisible = true;
+  Color containerColor = Colors.blue;
+  List<Color> colorList = [Colors.red, Colors.blue, Colors.black, Colors.amber];
+  AppDatabase db = AppDatabase();
 
   void _incrementCounter() {
     setState(() {
@@ -33,12 +41,58 @@ class _MyHomePageState extends State<MyHomePage> {
     super.didChangeDependencies();
     print('HomePage - didChangeDependencies');
   }
+  // @override
+  // Widget build(BuildContext context) {
+  //   print("HomePage - build");
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+  //       title: Text(widget.title), centerTitle: true,
+  //     ),
+  //     body: Center(
+  //       child: Column(
+  //         mainAxisAlignment: .center,
+  //         children: [
+  //           Visibility(
+  //             visible: isVisible,
+  //           child:  const Text('You have pushed the button this many times:'), ),
+  //           Text(
+  //             '$_counter',
+  //             style: Theme.of(context).textTheme.headlineMedium,
+  //           ),
+  //           Container(width: 200, height: 100,color: containerColor),
+  //           TextButton(onPressed: _upadateUI,
+  //            child: Text('Test'))
+  //         ],
+  //       ),
+  //     ),
+  //     floatingActionButton: FloatingActionButton(
+  //       onPressed: _incrementCounter,
+  //       tooltip: 'Increment',
+  //       child: const Icon(Icons.add),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+       
+  actions: [
+    IconButton(
+      icon: Icon(Icons.settings),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SettingPage(),
+          ),
+        );
+      },
+    ),
+  ],
 
         title: Text(widget.title),
         centerTitle: true,
@@ -46,12 +100,11 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           Expanded(
-            child: tasks.isEmpty
-                ? Center(child: Text('Нет задач',style:
-                 TextStyle( fontSize: 18),))
-                : ListView.builder(
-                    itemCount: tasks.length,
+            child:  ListView.builder(
+                    itemCount: db.todoList.length,
+                    //itemCount: tasks.length,
                     itemBuilder: (context, index) {
+                      final todo = db.todoList[index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -64,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            tasks[index],
+                            todo.title,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -75,6 +128,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
           ),
+          
+  
+
 
           Padding(
             padding: const EdgeInsets.all(16),
@@ -95,7 +151,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
+      
     );
+    
   }
 
   void _navigateToPage() async {
@@ -105,9 +163,17 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     if (result != null) {
       setState(() {
-       tasks.insert(0, result);
+        tasks.insert(0, result);
       });
     }
+  }
+
+  void _upadateUI() {
+    setState(() {
+      isVisible = !isVisible;
+      containerColor = colorList[Random().nextInt(colorList.length)];
+    });
+    print('isVisible : $isVisible');
   }
 
   @override
@@ -130,4 +196,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
     print('HomePage - dispose');
   }
+}
+
+extension on Random {
+  void nextInt(int lenth) {}
 }
