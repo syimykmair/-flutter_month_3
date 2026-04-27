@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
 
@@ -86,6 +86,4 @@ class SettingPageState extends State<SettingPage> {
       ),
     );
   }
-
-  
 }
